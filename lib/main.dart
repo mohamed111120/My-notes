@@ -1,12 +1,12 @@
 import 'package:crud_nots/views/login_page.dart';
+import 'package:crud_nots/views/register_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
-
 void main() {
-    WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
     MaterialApp(
@@ -14,94 +14,61 @@ void main() {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(),
+      home: HomePage(),
     ),
   );
 }
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
-  @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
-
-
-class _RegisterPageState extends State<RegisterPage> {
-  late TextEditingController _email;
-  late TextEditingController _password;
-
-  @override
-  void initState() {
-    
-    _email =TextEditingController();
-    _password =TextEditingController();
-  
-      super.initState();
-  }
-
-  @override
-  void dispose() {
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Register"),
+        title: Text("Home"),
       ),
       body: FutureBuilder(
-        future:  Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-        ) ,
+        future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        ),
         builder: (context, snapshot) {
-
           switch (snapshot.connectionState) {
-            
             case ConnectionState.done:
-              return Column(
-          children: [
-            TextField(
-              enableSuggestions: false,
-              autocorrect:false ,
-              keyboardType:TextInputType.emailAddress ,
-              controller: _email,
-              decoration: InputDecoration(hintText: 'Enter your e-mail'),
-            ),
-            TextField(
-              enableSuggestions: false,
-              autocorrect:false ,
-                obscureText: true,
-                controller: _password,
-              decoration: InputDecoration(hintText: 'Enter your password'),
-            ),
-            Center(
-              child: TextButton(
-                child: Text('Register'),
-                onPressed: () async {
-      
-                  
-      
-                  final email = _email.text;
-                  final password = _password.text;
-      
-                final UserCredential= await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                      email: email, password: password);
-                      print(UserCredential);
-                },
-              ),
-            ),
-          ],
-        );
+              final user = FirebaseAuth.instance.currentUser;
 
-        default : return Text('Lofing....');
+              if (user?.emailVerified ?? false) {
+                return Text('Done');
+              } else {
+                return EmailVervication();
+              }
+
+            default:
+              return Text('Lofing....');
           }
-
-           
         },
       ),
+    );
+  }
+}
+
+class EmailVervication extends StatelessWidget {
+  const EmailVervication({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text("Please press to verify your email "),
+        TextButton(
+            onPressed: () async {
+              final user = FirebaseAuth.instance.currentUser;
+              print(user);
+
+              await user?.sendEmailVerification();
+            },
+            child: Text('verify'))
+      ],
     );
   }
 }
