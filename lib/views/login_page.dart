@@ -11,18 +11,16 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-
 class _LoginPageState extends State<LoginPage> {
   late TextEditingController _email;
   late TextEditingController _password;
 
   @override
   void initState() {
-    
-    _email =TextEditingController();
-    _password =TextEditingController();
-  
-      super.initState();
+    _email = TextEditingController();
+    _password = TextEditingController();
+
+    super.initState();
   }
 
   @override
@@ -31,61 +29,50 @@ class _LoginPageState extends State<LoginPage> {
     _password.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
       ),
-      body: FutureBuilder(
-        future:  Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-        ) ,
-        builder: (context, snapshot) {
+      body: Column(
+        children: [
+          TextField(
+            enableSuggestions: false,
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
+            controller: _email,
+            decoration: InputDecoration(hintText: 'Enter your e-mail'),
+          ),
+          TextField(
+            enableSuggestions: false,
+            autocorrect: false,
+            obscureText: true,
+            controller: _password,
+            decoration: InputDecoration(hintText: 'Enter your password'),
+          ),
+          Center(
+            child: TextButton(
+              child: Text('Login'),
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
 
-          switch (snapshot.connectionState) {
-            
-            case ConnectionState.done:
-              return Column(
-          children: [
-            TextField(
-              enableSuggestions: false,
-              autocorrect:false ,
-              keyboardType:TextInputType.emailAddress ,
-              controller: _email,
-              decoration: InputDecoration(hintText: 'Enter your e-mail'),
+                final UserCredential = await FirebaseAuth.instance
+                    .signInWithEmailAndPassword(
+                        email: email, password: password);
+                print(UserCredential);
+              },
             ),
-            TextField(
-              enableSuggestions: false,
-              autocorrect:false ,
-                obscureText: true,
-                controller: _password,
-              decoration: InputDecoration(hintText: 'Enter your password'),
-            ),
-            Center(
-              child: TextButton(
-                child: Text('Login'),
-                onPressed: () async {
-      
-                  
-      
-                  final email = _email.text;
-                  final password = _password.text;
-      
-                final UserCredential= await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: email, password: password);
-                      print(UserCredential);
-                },
-              ),
-            ),
-          ],
-        );
-
-        default : return Text('Lofing....');
-          }
-
-           
-        },
+          ),
+          TextButton(
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/register', (route) => false);
+              },
+              child: Text('go to register page')),
+        ],
       ),
     );
   }
