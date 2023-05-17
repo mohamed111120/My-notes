@@ -1,4 +1,5 @@
 import 'package:crud_nots/firebase_options.dart';
+import 'package:crud_nots/ustilitis/show_error_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -58,15 +59,45 @@ class _RegisterPageState extends State<RegisterPage> {
                 final email = _email.text;
                 final password = _password.text;
 
-                final UserCredential = await FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
-                        email: email, password: password);
-                print(UserCredential);
+                try {
+                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  );
+                  Navigator.of(context).pushNamed( '/verify');
+                } on FirebaseAuthException catch (e) {
+                  if (e.code == 'weak-password') {
+                    await showErroeDialog(
+                      context,
+                      "weak passwprd",
+                    );
+                  } else if (e.code == 'email-already-in-use') {
+                    await showErroeDialog(
+                      context,
+                      'email already in use ',
+                    );
+                  } else if (e.code == 'invalid-email') {
+                    await showErroeDialog(
+                      context,
+                      'invalid eamil enterd ',
+                    );
+                  } else {
+                    await showErroeDialog(
+                      context,
+                      e.code,
+                    );
+                  }
+                } catch (e) {
+                  await showErroeDialog(
+                    context,
+                    e.toString(),
+                  );
+                }
               },
             ),
           ),
           TextButton(
-              onPressed: () { 
+              onPressed: () {
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/login', (route) => false);
               },

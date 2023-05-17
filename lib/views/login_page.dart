@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:crud_nots/ustilitis/show_error_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -59,10 +62,40 @@ class _LoginPageState extends State<LoginPage> {
                 final email = _email.text;
                 final password = _password.text;
 
-                final UserCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                        email: email, password: password);
-                print(UserCredential);
+                try {
+                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  );
+
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/mainUi', (route) => false);
+                } on FirebaseAuthException catch (e) {
+                  //TO DO ===>>> The name of Error
+
+                  if (e.code == "user-not-found") {
+                    await showErroeDialog(
+                      context,
+                      'user not found ',
+                    );
+                  } else if (e.code == 'wrong-password') {
+                    await showErroeDialog(
+                      context,
+                      'wrong password ',
+                    );
+                  }else {
+                      await showErroeDialog(
+                      context,
+                      'Error : ${e.code }',
+                    );
+                  }
+                }  catch (e){
+
+                  await showErroeDialog(
+                      context,
+                      e.toString(),
+                    );
+                }
               },
             ),
           ),
@@ -77,3 +110,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+

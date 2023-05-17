@@ -21,6 +21,7 @@ void main() {
         '/register': (context) => RegisterPage(),
         '/login': (context) => LoginPage(),
         '/verify': (context) => EmailVervication(),
+        '/mainUi' : (context) => MainUi(),
       },
     ),
   );
