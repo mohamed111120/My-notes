@@ -54,7 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           Center(
             child: TextButton(
-              child: Text('Register'),
+              child: const Text('Register'),
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
@@ -64,7 +64,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     email: email,
                     password: password,
                   );
-                  Navigator.of(context).pushNamed( '/verify');
+                  final user = FirebaseAuth.instance.currentUser;
+                  user?.sendEmailVerification();
+                  Navigator.of(context).pushNamed('/verify');
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'weak-password') {
                     await showErroeDialog(

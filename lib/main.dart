@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
                 return EmailVervication();
               }
             } else {
-              return RegisterPage();
+              return LoginPage();
             }
 
           default:

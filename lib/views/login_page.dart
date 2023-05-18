@@ -67,9 +67,17 @@ class _LoginPageState extends State<LoginPage> {
                     email: email,
                     password: password,
                   );
-
+                    final user = await FirebaseAuth.instance.currentUser;
+                    if (user?.emailVerified?? false) {
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil('/mainUi', (route) => false);
+                    
+                    }else{
+                Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/verify', (route) => false);
+                      
+                    }
+                  
                 } on FirebaseAuthException catch (e) {
                   //TO DO ===>>> The name of Error
 

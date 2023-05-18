@@ -6,18 +6,35 @@ class EmailVervication extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text("Please press to verify your email "),
-        TextButton(
-            onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              print(user);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("verification"),
+      ),
+      body: Column(
+        children: [
+          Text(
+              "We've send your email verify ,please open it to verify your account "),
+          Text(
+              " if you have not received a verivecation email yet , press the button below "),
+          TextButton(
+              onPressed: () async {
+                final user = FirebaseAuth.instance.currentUser;
+                print(user);
 
-              await user?.sendEmailVerification();
+                await user?.sendEmailVerification();
+              },
+              child: Text('verify')),
+          TextButton(
+            onPressed: ()async  {
+              await FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushNamedAndRemoveUntil('/register', (route) => false);
             },
-            child: Text('verify'))
-      ],
+            child: const Text(
+              'Restart',
+            ),
+          )
+        ],
+      ),
     );
   }
 }
